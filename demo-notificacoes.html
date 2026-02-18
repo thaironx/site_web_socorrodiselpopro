@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Notificações</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .demo-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            background: #2a2a2a;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .demo-title {
+            margin-bottom: 30px;
+            color: #d32f2f;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .demo-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .demo-btn:hover { transform: translateY(-3px); }
+        .btn-success { background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); color: white; }
+        .btn-error   { background: linear-gradient(135deg, #f44336 0%, #c62828 100%); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ffa726 0%, #f57c00 100%); color: white; }
+        .btn-info    { background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%); color: white; }
+        .back-link {
+            margin-top: 30px;
+            display: inline-block;
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="demo-container">
+    <h1 class="demo-title">🔔 Demonstração de Notificações</h1>
+    <p style="color: #bbb; margin-bottom: 20px;">
+        Clique nos botões abaixo para ver as notificações em ação!
+    </p>
+
+    <div class="button-grid">
+        <button class="demo-btn btn-success" onclick="showSuccess('Operação realizada com sucesso!')">✔ Sucesso</button>
+        <button class="demo-btn btn-error"   onclick="showError('Ocorreu um erro ao processar a solicitação.')">✕ Erro</button>
+        <button class="demo-btn btn-warning" onclick="showWarning('Por favor, preencha todos os campos obrigatórios.')">⚠ Aviso</button>
+        <button class="demo-btn btn-info"    onclick="showInfo('Suas informações foram salvas automaticamente.')">ℹ Info</button>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #1a1a1a; border-radius: 12px;">
+        <p style="color: #bbb; font-size: 14px; margin-bottom: 10px;">
+            <strong style="color: white;">Teste Múltiplas Notificações:</strong>
+        </p>
+        <button class="demo-btn" style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); color: white;" onclick="testMultiple()">
+            🔥 Mostrar Várias
+        </button>
+    </div>
+
+    <a href="home.html" class="back-link">← Voltar para o site</a>
+</div>
+
+<script src="js/toast.js"></script>
+<script>
+function testMultiple() {
+    showInfo('Iniciando teste de múltiplas notificações...');
+    setTimeout(() => showSuccess('Primeira notificação enviada!'), 500);
+    setTimeout(() => showWarning('Atenção: Esta é a segunda notificação.'), 1000);
+    setTimeout(() => showError('E aqui está a terceira notificação de erro.'), 1500);
+    setTimeout(() => showInfo('Teste concluído! Todas as notificações funcionando perfeitamente.'), 2000);
+}
+</script>
+
+</body>
+</html>

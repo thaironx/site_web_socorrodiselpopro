@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - Socorro Diesel PO Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="img/logo.png" alt="Socorro Diesel Po Pro" class="logo-image">
+        <img src="img/nomelogo.png" alt="Socorro Diesel Po Pro" class="logo-image">
+    </div>
+    <a href="home.html" class="back-btn">⬅ Voltar</a>
+</header>
+
+<div class="conta-container">
+    <h1>👤 Minha Conta</h1>
+
+    <div class="info-section">
+        <div class="info">
+            <span class="info-label">Nome:</span>
+            <span class="info-value">João Enrique</span>
+        </div>
+
+        <div class="info">
+            <span class="info-label">Veículo:</span>
+            <span class="info-value">Scania R450</span>
+        </div>
+
+        <div class="info">
+            <span class="info-label">Plano:</span>
+            <span class="info-value">Atendimento Pro Max</span>
+        </div>
+
+        <div class="info">
+            <span class="info-label">Telefone:</span>
+            <span class="info-value">(31) 998765-4321</span>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <h2>📋 Histórico de Atendimentos</h2>
+        
+        <div class="history-item">
+            <div class="history-header">
+                <span class="history-date">15/02/2025 - 14:30</span>
+                <span class="history-status status-completed">Concluído</span>
+            </div>
+            <div class="history-body">
+                <p><strong>Serviço:</strong> Pane Elétrica</p>
+                <p><strong>Local:</strong> BR-381, Km 245 - MG</p>
+                <p><strong>Técnico:</strong> Carlos Silva</p>
+                <p><strong>Valor:</strong> R$ 320,00</p>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="history-header">
+                <span class="history-date">08/02/2025 - 09:15</span>
+                <span class="history-status status-completed">Concluído</span>
+            </div>
+            <div class="history-body">
+                <p><strong>Serviço:</strong> Problema na Bateria</p>
+                <p><strong>Local:</strong> BR-116, Km 580 - SP</p>
+                <p><strong>Técnico:</strong> Roberto Santos</p>
+                <p><strong>Valor:</strong> R$ 180,00</p>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="history-header">
+                <span class="history-date">01/02/2025 - 22:45</span>
+                <span class="history-status status-completed">Concluído</span>
+            </div>
+            <div class="history-body">
+                <p><strong>Serviço:</strong> Falta de Combustível</p>
+                <p><strong>Local:</strong> BR-040, Km 120 - RJ</p>
+                <p><strong>Técnico:</strong> Pedro Oliveira</p>
+                <p><strong>Valor:</strong> R$ 220,00</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2>📊 Estatísticas</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Atendimentos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23 min</div>
+                <div class="stat-label">Tempo Médio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Satisfação</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="logout-btn" id="logoutBtn">🚪 Sair da Conta</button>
+</div>
+
+<script src="js/toast.js"></script>
+<script src="js/conta.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Socorro - Socorro Diesel PO Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="logo-container">
+        <div class="menu-icon" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="img/logo.png" alt="Socorro Diesel Pro" class="logo-image">
+        <img src="img/nomelogo.png" alt="Socorro Diesel Pro" class="logo-image">
+    </div>
+    <a href="home.html" class="back-btn">⬅ Voltar</a>
+</header>
+
+<!-- Navigation -->
+<nav class="nav" id="mainNav">
+    <a href="home.html" class="nav-item">≡ PAGINA INICIAL</a>
+    <a href="servic.html" class="nav-item">NOSSOS SERVIÇOS</a>
+    <a href="veiculos.html" class="nav-item">MEUS VEÍCULOS</a>
+</nav>
+
+<div class="container">
+    <h1 class="title">🚛 SOLICITAR SOCORRO</h1>
+
+    <!-- Localização -->
+    <div class="card">
+        <h3>📍 Localização</h3>
+        <button class="location-btn" id="getLocationBtn">
+            <span id="locationBtnText">Usar minha localização</span>
+        </button>
+        <p id="location-text" class="location-display"></p>
+        <input type="hidden" id="latitude" value="">
+        <input type="hidden" id="longitude" value="">
+    </div>
+
+    <!-- Tipo de problema -->
+    <div class="card">
+        <h3>⚙ Tipo de Problema</h3>
+        <div class="problem-grid">
+            <div class="problem" data-service="Pane Mecânica" data-price="280" data-time="25-35">
+                <span class="problem-icon">🔧</span>
+                <span class="problem-name">Pane Mecânica</span>
+            </div>
+            <div class="problem" data-service="Problema na Bateria" data-price="180" data-time="15-25">
+                <span class="problem-icon">🔋</span>
+                <span class="problem-name">Bateria</span>
+            </div>
+            <div class="problem" data-service="Problema no Pneu" data-price="200" data-time="20-30">
+                <span class="problem-icon">🛞</span>
+                <span class="problem-name">Pneu</span>
+            </div>
+            <div class="problem" data-service="Falta de Combustível" data-price="220" data-time="20-30">
+                <span class="problem-icon">⛽</span>
+                <span class="problem-name">Combustível</span>
+            </div>
+            <div class="problem" data-service="Reboque Emergencial" data-price="450" data-time="30-45">
+                <span class="problem-icon">🚛</span>
+                <span class="problem-name">Reboque</span>
+            </div>
+            <div class="problem" data-service="Pane Elétrica" data-price="320" data-time="30-40">
+                <span class="problem-icon">🔌</span>
+                <span class="problem-name">Elétrica</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações do serviço selecionado -->
+    <div class="card service-details" id="serviceDetails" style="display:none;">
+        <h3>💰 Detalhes do Serviço</h3>
+        <div class="detail-row">
+            <span class="detail-label">Serviço:</span>
+            <span class="detail-value" id="selectedService">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Valor estimado:</span>
+            <span class="detail-value price-highlight" id="servicePrice">R$ 0,00</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Tempo estimado:</span>
+            <span class="detail-value time-highlight" id="serviceTime">-</span>
+        </div>
+        <p class="detail-note">* Valores podem variar conforme localização e horário</p>
+    </div>
+
+    <!-- Descrição -->
+    <div class="card">
+        <h3>📝 Descrição (opcional)</h3>
+        <textarea id="description" rows="3" placeholder="Descreva o problema em detalhes..."></textarea>
+    </div>
+
+    <!-- Veículo -->
+    <div class="card">
+        <h3>🚛 Veículo</h3>
+        <input type="text" id="vehiclePlate" placeholder="Placa do veículo (ex: ABC-1234 ou ABC1D23)" maxlength="8">
+        <p id="plateError" style="display:none; color:#f44336; margin-top:8px; font-size:13px; font-weight:bold;">⚠ Placa inválida. Use o padrão antigo (ABC-1234 / ABC1234) ou Mercosul (ABC1D23).</p>
+    </div>
+
+    <button class="confirm-btn" id="confirmBtn">🚨 CONFIRMAR SOLICITAÇÃO</button>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Redirecionando para o WhatsApp...</p>
+        </div>
+    </div>
+</div>
+
+<script src="js/toast.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/servic.js"></script>
+<script>
+// Validação da placa em tempo real
+(function() {
+    function validatePlate(plate) {
+        const cleaned = plate.replace(/[-\s]/g, '').toUpperCase();
+        const oldFormat = /^[A-Z]{3}\d{4}$/;
+        const mercosulFormat = /^[A-Z]{3}\d[A-Z]\d{2}$/;
+        return oldFormat.test(cleaned) || mercosulFormat.test(cleaned);
+    }
+
+    const vehiclePlateInput = document.getElementById('vehiclePlate');
+    const plateError = document.getElementById('plateError');
+
+    vehiclePlateInput.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            plateError.style.display = 'none';
+            return;
+        }
+        plateError.style.display = validatePlate(this.value.trim()) ? 'none' : 'block';
+    });
+})();
+</script>
+
+</body>
+</html>

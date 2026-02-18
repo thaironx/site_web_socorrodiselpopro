@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0; url=home.html">
+    <title>Socorro Diesel Po Pro - Redirecionando...</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(211, 47, 47, 0.3);
+            border-top: 4px solid #d32f2f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        a { color: #d32f2f; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>🚛 Socorro Diesel Pro</h1>
+        <div class="spinner"></div>
+        <p>Redirecionando...</p>
+        <p><small>Se não redirecionar automaticamente, <a href="home.html">clique aqui</a></small></p>
+    </div>
+    <script>
+        setTimeout(function() { window.location.href = 'home.html'; }, 1000);
+    </script>
+</body>
+</html>
