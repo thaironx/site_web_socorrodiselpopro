@@ -5,6 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Veículos - Socorro Diesel PO Pro</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .modal-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.85); z-index:5000;
+            align-items:center; justify-content:center; padding:20px;
+        }
+        .modal-overlay.open { display:flex; }
+        .modal {
+            background:linear-gradient(135deg,#2a2a2a 0%,#1e1e1e 100%);
+            border-radius:20px; padding:30px; width:100%; max-width:520px;
+            max-height:90vh; overflow-y:auto;
+            box-shadow:0 20px 60px rgba(0,0,0,0.7);
+            border:2px solid rgba(211,47,47,0.3);
+            animation:modalPop 0.3s ease;
+        }
+        @keyframes modalPop { from{transform:scale(0.85);opacity:0} to{transform:scale(1);opacity:1} }
+        .modal-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:25px; padding-bottom:15px;
+            border-bottom:2px solid rgba(211,47,47,0.3);
+        }
+        .modal-title { font-size:20px; font-weight:bold; color:#d32f2f; }
+        .modal-close {
+            background:#3a3a3a; border:none; color:white;
+            width:32px; height:32px; border-radius:50%;
+            cursor:pointer; font-size:18px;
+            display:flex; align-items:center; justify-content:center;
+            transition:0.2s; flex-shrink:0;
+        }
+        .modal-close:hover { background:#d32f2f; }
+        .modal-form-group { margin-bottom:16px; }
+        .modal-label { display:block; font-size:13px; font-weight:bold; color:#bbb; margin-bottom:6px; }
+        .modal-input, .modal-select {
+            width:100%; padding:12px 14px; border-radius:10px;
+            border:2px solid #3a3a3a; background:#3a3a3a;
+            color:white; font-size:14px; font-family:inherit; transition:0.3s;
+        }
+        .modal-input:focus, .modal-select:focus { outline:none; border-color:#d32f2f; background:#2a2a2a; }
+        .modal-input::placeholder { color:#777; }
+        .modal-select option { background:#2a2a2a; }
+        .modal-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .modal-btn {
+            width:100%; padding:14px; border:none; border-radius:12px;
+            font-size:15px; font-weight:bold; cursor:pointer; transition:0.3s; margin-top:8px;
+        }
+        .modal-btn-primary {
+            background:linear-gradient(135deg,#d32f2f 0%,#b71c1c 100%);
+            color:white; box-shadow:0 4px 15px rgba(211,47,47,0.4);
+        }
+        .modal-btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(211,47,47,0.6); }
+        .modal-btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .modal-btn-secondary { background:#3a3a3a; color:#bbb; margin-top:10px; }
+        .modal-btn-secondary:hover { background:#444; color:white; }
+        .manut-item {
+            background:#3a3a3a; border-radius:12px; padding:15px;
+            margin-bottom:12px; border-left:4px solid #ffa726;
+        }
+        .manut-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+        .manut-date  { font-weight:bold; font-size:14px; color:#ffa726; }
+        .manut-type  { background:rgba(255,167,38,0.2); color:#ffa726; padding:3px 10px; border-radius:10px; font-size:12px; font-weight:bold; }
+        .spinner-btn {
+            display:inline-block; width:14px; height:14px;
+            border:2px solid rgba(255,255,255,0.3); border-top:2px solid white;
+            border-radius:50%; animation:spin 0.8s linear infinite;
+            vertical-align:middle; margin-right:6px;
+        }
+        .add-manut-section { margin-top:20px; padding-top:20px; border-top:2px solid rgba(211,47,47,0.2); }
+        .add-manut-section h4 { color:#d32f2f; margin-bottom:15px; font-size:15px; }
+        .vehicle-placeholder { text-align:center; padding:40px; color:#888; font-size:15px; }
+        .erro-banner {
+            padding:12px 16px; border-radius:10px; margin-bottom:16px;
+            font-size:13px; background:rgba(244,67,54,0.15);
+            color:#f44336; border:1px solid rgba(244,67,54,0.3); display:none;
+        }
+        .doc-item {
+            background:#3a3a3a; border-radius:12px; padding:15px; margin-bottom:12px;
+            display:flex; align-items:center; gap:15px;
+            cursor:pointer; transition:0.3s; border:2px solid transparent;
+        }
+        .doc-item:hover { border-color:#4caf50; transform:translateX(5px); }
+        .doc-icon { font-size:30px; flex-shrink:0; }
+        .doc-info { flex:1; }
+        .doc-name   { font-weight:bold; font-size:15px; }
+        .doc-detail { font-size:12px; color:#888; margin-top:3px; }
+        .doc-status { padding:4px 10px; border-radius:10px; font-size:11px; font-weight:bold; }
+        .doc-ok       { background:rgba(76,175,80,0.2);  color:#4caf50; }
+        .doc-expiring { background:rgba(255,167,38,0.2); color:#ffa726; }
+        .doc-expired  { background:rgba(244,67,54,0.2);  color:#f44336; }
+    </style>
 </head>
 <body>
 
@@ -18,162 +107,728 @@
 
 <div class="conta-container">
     <h1>🚛 Meus Veículos</h1>
+    <div id="erroBanner" class="erro-banner"></div>
+    <div id="vehiclesList"></div>
+    <button class="add-vehicle-btn" id="addVehicleBtn">➕ Adicionar Novo Veículo</button>
+</div>
 
-    <!-- Veículo 1 -->
-    <div class="vehicle-card">
-        <div class="vehicle-badge active">Veículo Principal</div>
-        
-        <div class="vehicle-image-container">
-            <img src="img/veiculo-scania.png" alt="Scania R450" class="vehicle-image">
+<!-- MODAL: EDITAR VEÍCULO -->
+<div class="modal-overlay" id="modalEdit">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">✏️ Editar Veículo</span>
+            <button class="modal-close" id="closeEdit">×</button>
         </div>
-
-        <div class="vehicle-info-grid">
-            <div class="vehicle-info-item">
-                <span class="info-icon">🚛</span>
-                <div>
-                    <div class="info-label">Modelo</div>
-                    <div class="info-value">Scania R450</div>
-                </div>
+        <input type="hidden" id="editDocId"><!-- ID do documento no Firestore -->
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Marca *</label>
+                <input type="text" class="modal-input" id="editMarca" placeholder="Ex: Scania">
             </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🏭</span>
-                <div>
-                    <div class="info-label">Marca</div>
-                    <div class="info-value">Scania</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">⚙️</span>
-                <div>
-                    <div class="info-label">Motorização</div>
-                    <div class="info-value">13.0 450cv Diesel</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">📅</span>
-                <div>
-                    <div class="info-label">Ano</div>
-                    <div class="info-value">2022/2023</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🔢</span>
-                <div>
-                    <div class="info-label">Placa</div>
-                    <div class="info-value">ABC-1234</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🎨</span>
-                <div>
-                    <div class="info-label">Cor</div>
-                    <div class="info-value">Branco</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">📍</span>
-                <div>
-                    <div class="info-label">Kilometragem</div>
-                    <div class="info-value">127.450 km</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🔧</span>
-                <div>
-                    <div class="info-label">Última Manutenção</div>
-                    <div class="info-value">10/02/2025</div>
-                </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Modelo *</label>
+                <input type="text" class="modal-input" id="editModelo" placeholder="Ex: R440">
             </div>
         </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Ano</label>
+                <input type="text" class="modal-input" id="editAno" placeholder="Ex: 2022/2023">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Cor</label>
+                <input type="text" class="modal-input" id="editCor" placeholder="Ex: Branco">
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Placa *</label>
+                <input type="text" class="modal-input" id="editPlaca" placeholder="ABC1234" maxlength="8">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Motorização</label>
+                <input type="text" class="modal-input" id="editMotor" placeholder="Ex: 12.8 480cv">
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Km Atual</label>
+                <input type="text" class="modal-input" id="editKm" placeholder="Ex: 68.000" inputmode="numeric">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Tipo</label>
+                <select class="modal-select" id="editTipo">
+                    <option value="principal">Veículo Principal</option>
+                    <option value="secundario">Veículo Secundário</option>
+                </select>
+            </div>
+        </div>
+        <button class="modal-btn modal-btn-primary" id="saveEditBtn">💾 Salvar Alterações</button>
+        <button class="modal-btn modal-btn-secondary" id="cancelEdit">Cancelar</button>
+    </div>
+</div>
 
-        <div class="vehicle-actions">
-            <button class="action-btn btn-edit">✏️ Editar</button>
-            <button class="action-btn btn-maintenance">🔧 Manutenções</button>
-            <button class="action-btn btn-documents">📄 Documentos</button>
+<!-- MODAL: MANUTENÇÕES -->
+<div class="modal-overlay" id="modalMaint">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">🔧 Histórico de Manutenções</span>
+            <button class="modal-close" id="closeMaint">×</button>
+        </div>
+        <div id="maintVehicleName" style="color:#bbb; font-size:14px; margin-bottom:15px;"></div>
+        <div id="maintList"><div class="vehicle-placeholder" style="padding:20px;">Carregando...</div></div>
+
+        <div class="add-manut-section">
+            <h4>➕ Registrar Manutenção</h4>
+            <!-- truckid do veículo selecionado -->
+            <input type="hidden" id="maintTruckId">
+            <input type="hidden" id="maintDocId">
+
+            <div class="modal-form-group">
+                <label class="modal-label">Tipo de Manutenção *</label>
+                <select class="modal-select" id="maintTipo">
+                    <option value="">Selecione...</option>
+                    <option value="Troca de óleo">🔧 Troca de óleo</option>
+                    <option value="Revisão geral">🔍 Revisão geral</option>
+                    <option value="Troca de filtros">🌀 Troca de filtros</option>
+                    <option value="Freios">🛑 Freios</option>
+                    <option value="Suspensão">⚙️ Suspensão</option>
+                    <option value="Sistema elétrico">🔌 Sistema elétrico</option>
+                    <option value="Pneus">🛞 Pneus</option>
+                    <option value="Injeção diesel">⛽ Injeção diesel</option>
+                    <option value="Outro">📋 Outro</option>
+                </select>
+            </div>
+            <div class="modal-row">
+                <div class="modal-form-group">
+                    <label class="modal-label">Data *</label>
+                    <input type="text" class="modal-input" id="maintData" placeholder="DD/MM/AAAA">
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label">Km Atual</label>
+                    <input type="text" class="modal-input" id="maintKm" placeholder="Ex: 70.000" inputmode="numeric">
+                </div>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Custo (R$) → <code>customanuten</code></label>
+                <input type="text" class="modal-input" id="maintCusto" placeholder="Ex: 1.250" inputmode="numeric">
+            </div>
+            <button class="modal-btn modal-btn-primary" id="saveMaintBtn">✅ Registrar</button>
         </div>
     </div>
+</div>
 
-    <!-- Veículo 2 -->
-    <div class="vehicle-card">
-        <div class="vehicle-badge">Veículo Secundário</div>
-        
-        <div class="vehicle-image-container">
-            <img src="img/veiculo-mercedes.png" alt="Mercedes-Benz Actros" class="vehicle-image">
+<!-- MODAL: DOCUMENTOS -->
+<div class="modal-overlay" id="modalDocs">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">📄 Documentos</span>
+            <button class="modal-close" id="closeDocs">×</button>
         </div>
-
-        <div class="vehicle-info-grid">
-            <div class="vehicle-info-item">
-                <span class="info-icon">🚛</span>
-                <div>
-                    <div class="info-label">Modelo</div>
-                    <div class="info-value">Actros 2651</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🏭</span>
-                <div>
-                    <div class="info-label">Marca</div>
-                    <div class="info-value">Mercedes-Benz</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">⚙️</span>
-                <div>
-                    <div class="info-label">Motorização</div>
-                    <div class="info-value">15.6 510cv Diesel</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">📅</span>
-                <div>
-                    <div class="info-label">Ano</div>
-                    <div class="info-value">2020/2021</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🔢</span>
-                <div>
-                    <div class="info-label">Placa</div>
-                    <div class="info-value">XYZ-5678</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🎨</span>
-                <div>
-                    <div class="info-label">Cor</div>
-                    <div class="info-value">Vermelho</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">📍</span>
-                <div>
-                    <div class="info-label">Kilometragem</div>
-                    <div class="info-value">234.890 km</div>
-                </div>
-            </div>
-            <div class="vehicle-info-item">
-                <span class="info-icon">🔧</span>
-                <div>
-                    <div class="info-label">Última Manutenção</div>
-                    <div class="info-value">05/01/2025</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="vehicle-actions">
-            <button class="action-btn btn-edit">✏️ Editar</button>
-            <button class="action-btn btn-maintenance">🔧 Manutenções</button>
-            <button class="action-btn btn-documents">📄 Documentos</button>
-        </div>
+        <div id="docsVehicleName" style="color:#bbb; font-size:14px; margin-bottom:15px;"></div>
+        <div class="doc-item"><span class="doc-icon">📋</span>
+            <div class="doc-info"><div class="doc-name">CRLV — Certificado de Registro</div>
+            <div class="doc-detail">Licenciamento anual</div></div>
+            <span class="doc-status doc-ok">✓ Em dia</span></div>
+        <div class="doc-item"><span class="doc-icon">🛡️</span>
+            <div class="doc-info"><div class="doc-name">Seguro Obrigatório (DPVAT)</div>
+            <div class="doc-detail">Vence em 30/06/2025</div></div>
+            <span class="doc-status doc-expiring">⚠ Vence em breve</span></div>
+        <div class="doc-item"><span class="doc-icon">🔬</span>
+            <div class="doc-info"><div class="doc-name">Inspeção Veicular (DETRAN)</div>
+            <div class="doc-detail">Vistoria técnica</div></div>
+            <span class="doc-status doc-ok">✓ Em dia</span></div>
+        <div class="doc-item"><span class="doc-icon">⚖️</span>
+            <div class="doc-info"><div class="doc-name">Tacógrafo — Calibração</div>
+            <div class="doc-detail">Vence em 15/03/2025</div></div>
+            <span class="doc-status doc-expired">✕ Vencido</span></div>
+        <div class="doc-item"><span class="doc-icon">📦</span>
+            <div class="doc-info"><div class="doc-name">ANTT — Registro de Transportador</div>
+            <div class="doc-detail">Ministério dos Transportes</div></div>
+            <span class="doc-status doc-ok">✓ Em dia</span></div>
+        <button class="modal-btn modal-btn-secondary" id="closeDocsBtn">Fechar</button>
     </div>
+</div>
 
-    <button class="add-vehicle-btn" id="addVehicleBtn">
-        ➕ Adicionar Novo Veículo
-    </button>
+<!-- MODAL: ADICIONAR VEÍCULO -->
+<div class="modal-overlay" id="modalAdd">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">➕ Novo Veículo</span>
+            <button class="modal-close" id="closeAdd">×</button>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Marca *</label>
+                <input type="text" class="modal-input" id="addMarca" placeholder="Ex: Scania">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Modelo *</label>
+                <input type="text" class="modal-input" id="addModelo" placeholder="Ex: R440">
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Ano</label>
+                <input type="text" class="modal-input" id="addAno" placeholder="Ex: 2022/2023">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Cor</label>
+                <input type="text" class="modal-input" id="addCor" placeholder="Ex: Branco">
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Placa *</label>
+                <input type="text" class="modal-input" id="addPlaca" placeholder="ABC1234" maxlength="8">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Motorização</label>
+                <input type="text" class="modal-input" id="addMotor" placeholder="Ex: 12.8 480cv">
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-form-group">
+                <label class="modal-label">Km Atual</label>
+                <input type="number" class="modal-input" id="addKm" placeholder="Ex: 68000">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Tipo</label>
+                <select class="modal-select" id="addTipo">
+                    <option value="principal">Veículo Principal</option>
+                    <option value="secundario">Veículo Secundário</option>
+                </select>
+            </div>
+        </div>
+        <button class="modal-btn modal-btn-primary" id="saveAddBtn">🚛 Cadastrar Veículo</button>
+        <button class="modal-btn modal-btn-secondary" id="cancelAdd">Cancelar</button>
+    </div>
 </div>
 
 <script src="js/toast.js"></script>
-<script src="js/veiculos.js"></script>
+<script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+        collection, doc, getDoc, getDocs, addDoc, updateDoc,
+        query, where, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // Estado global
+    let currentUser = null;
+    let iduser      = null; // ex: "thairon_master" — chave de busca no banco
+
+    // Gera um truckid único: ex "A123BCD456EFSDPOPRO"
+    function gerarTruckId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let id = '';
+        for (let i = 0; i < 18; i++) id += chars[Math.floor(Math.random() * chars.length)];
+        return id + 'SDPOPRO';
+    }
+
+    // Helpers modal
+    const openModal  = id => document.getElementById(id).classList.add('open');
+    const closeModal = id => document.getElementById(id).classList.remove('open');
+
+    document.querySelectorAll('.modal-overlay').forEach(o =>
+        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+    );
+    document.getElementById('closeEdit').addEventListener('click',    () => closeModal('modalEdit'));
+    document.getElementById('cancelEdit').addEventListener('click',   () => closeModal('modalEdit'));
+    document.getElementById('closeMaint').addEventListener('click',   () => closeModal('modalMaint'));
+    document.getElementById('closeDocs').addEventListener('click',    () => closeModal('modalDocs'));
+    document.getElementById('closeDocsBtn').addEventListener('click', () => closeModal('modalDocs'));
+    document.getElementById('closeAdd').addEventListener('click',     () => closeModal('modalAdd'));
+    document.getElementById('cancelAdd').addEventListener('click',    () => closeModal('modalAdd'));
+    document.querySelectorAll('.doc-item').forEach(i =>
+        i.addEventListener('click', () => showInfo(i.querySelector('.doc-name').textContent + ' — em breve.'))
+    );
+
+    // =============================================
+    // AUTENTICAÇÃO — obtém uid e iduser do cliente
+    // =============================================
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            showWarning('Você precisa estar logado.');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+            return;
+        }
+        currentUser = user;
+
+        // Lê o iduser salvo no cadastro em clientes/{uid}
+        try {
+            const snap = await getDoc(doc(db, 'clientes', user.uid));
+            if (snap.exists()) {
+                iduser = snap.data().iduser;
+                console.log('[Veículos] Usuário logado — uid:', user.uid, '| iduser:', iduser);
+            } else {
+                console.warn('[Veículos] Documento do cliente não encontrado!');
+                iduser = user.uid; // fallback
+            }
+        } catch (e) {
+            console.error('[Veículos] Erro ao ler clientes/', user.uid, e);
+            iduser = user.uid;
+        }
+
+        await loadVehicles();
+    });
+
+    // =============================================
+    // CARREGAR VEÍCULOS
+    // Busca na coleção 'veiculos' onde iduser == iduser do cliente logado
+    // =============================================
+    async function loadVehicles() {
+        const list = document.getElementById('vehiclesList');
+        list.innerHTML = `<div class="vehicle-placeholder">Carregando seus veículos...</div>`;
+
+        try {
+            // Busca TODOS os veículos que pertencem ao iduser logado
+            const q = query(
+                collection(db, 'veiculos'),
+                where('iduser', '==', iduser)
+            );
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                list.innerHTML = `<div class="vehicle-placeholder">
+                    🚛 Você ainda não tem veículos cadastrados.<br>
+                    <span style="font-size:13px;color:#666;margin-top:8px;display:block;">
+                        Clique em "Adicionar Novo Veículo" abaixo.
+                    </span>
+                </div>`;
+                return;
+            }
+
+            const veiculos = [];
+            snap.forEach(d => {
+                console.log('[Veículos] Encontrado:', d.id, d.data());
+                veiculos.push({ _docId: d.id, ...d.data() });
+            });
+
+            // Principal primeiro
+            veiculos.sort((a, b) => (a.tipo === 'principal' ? -1 : 1));
+            list.innerHTML = veiculos.map(renderCard).join('');
+            attachEvents();
+
+        } catch (err) {
+            console.error('[Veículos] Erro:', err.code, err.message);
+            mostrarErro(err);
+            list.innerHTML = `<div class="vehicle-placeholder" style="color:#f44336;">
+                ❌ Erro ao carregar: ${err.code === 'permission-denied'
+                    ? 'Regras do Firestore negando acesso. Veja CONFIGURACAO.md.'
+                    : err.message}
+            </div>`;
+        }
+    }
+
+    function mostrarErro(err) {
+        const b = document.getElementById('erroBanner');
+        b.style.display = 'block';
+        if (err.code === 'permission-denied') {
+            b.innerHTML = `⛔ <strong>Firestore bloqueando.</strong>
+                Regras precisam ser atualizadas. Veja o arquivo <code>CONFIGURACAO.md</code>.`;
+        } else {
+            b.innerHTML = `⚠️ ${err.code || err.message}`;
+        }
+    }
+
+    // =============================================
+    // MAPA DE MARCAS → IMAGEM
+    // Coloque os arquivos na pasta img/ com esses nomes:
+    // mercedes.png, volkswagen.png, scania.png, man.png,
+    // volvo.png, iveco.png, daf.png, agrale.png, foton.png,
+    // hyundai.png, jac.png, byd.png, international.png,
+    // jmc.png, sinotruk.png, shacman.png, caminhao.png (padrão)
+    // =============================================
+    function getMarcaImg(marca) {
+        if (!marca) return 'img/caminhao.png';
+
+        const mapa = {
+            'mercedes':      'img/mercedes.png',
+            'mercedes-benz': 'img/mercedes.png',
+            'mercedesbenz':  'img/mercedes.png',
+            'volkswagen':    'img/volkswagen.png',
+            'vw':            'img/volkswagen.png',
+            'scania':        'img/scania.png',
+            'man':           'img/man.png',
+            'volvo':         'img/volvo.png',
+            'iveco':         'img/iveco.png',
+            'daf':           'img/daf.png',
+            'agrale':        'img/agrale.png',
+            'foton':         'img/foton.png',
+            'hyundai':       'img/hyundai.png',
+            'jac':           'img/jac.png',
+            'byd':           'img/byd.png',
+            'international': 'img/international.png',
+            'jmc':           'img/jmc.png',
+            'sinotruk':      'img/sinotruk.png',
+            'shacman':       'img/shacman.png',
+        };
+
+        const chave = marca.toLowerCase().replace(/[\s\-\.]/g, '');
+        return mapa[chave] || mapa[marca.toLowerCase()] || 'img/caminhao.png';
+    }
+
+    // =============================================
+    // RENDERIZAR CARD DE VEÍCULO
+    // Campos: marca, modelo, ano, cor, placa, motor, kmatual, tipo, ultmanutenção, truckid
+    // =============================================
+    function renderCard(v) {
+        const badge = v.tipo === 'principal'
+            ? `<div class="vehicle-badge active">Veículo Principal</div>`
+            : `<div class="vehicle-badge">Veículo Secundário</div>`;
+        const km = v.kmatual ? Number(v.kmatual).toLocaleString('pt-BR') + ' km' : '-';
+        const ultimaManut = v['ultmanutenção'] || v.ultmanutencao || '-';
+
+        return `
+        <div class="vehicle-card"
+             data-docid="${v._docId}"
+             data-truckid="${v.truckid||''}"
+             data-modelo="${v.modelo||''}"
+             data-placa="${v.placa||''}">
+            ${badge}
+            <div class="vehicle-image-container">
+                <img src="${getMarcaImg(v.marca)}"
+                     alt="${v.modelo||''}" class="vehicle-image"
+                     onerror="this.src='img/caminhao.png'">
+            </div>
+            <div class="vehicle-info-grid">
+                <div class="vehicle-info-item"><span class="info-icon">🚛</span>
+                    <div><div class="info-label">Modelo</div><div class="info-value">${v.modelo||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">🏭</span>
+                    <div><div class="info-label">Marca</div><div class="info-value">${v.marca||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">⚙️</span>
+                    <div><div class="info-label">Motorização</div><div class="info-value">${v.motor||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">📅</span>
+                    <div><div class="info-label">Ano</div><div class="info-value">${v.ano||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">🔢</span>
+                    <div><div class="info-label">Placa</div><div class="info-value">${v.placa||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">🎨</span>
+                    <div><div class="info-label">Cor</div><div class="info-value">${v.cor||'-'}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">📍</span>
+                    <div><div class="info-label">Km Atual</div><div class="info-value">${km}</div></div></div>
+                <div class="vehicle-info-item"><span class="info-icon">🔧</span>
+                    <div><div class="info-label">Última Manutenção</div>
+                    <div class="info-value">${ultimaManut}</div></div></div>
+            </div>
+            <div class="vehicle-actions">
+                <button class="action-btn btn-edit"  data-docid="${v._docId}">✏️ Editar</button>
+                <button class="action-btn btn-maint" data-docid="${v._docId}" data-truckid="${v.truckid||v._docId}">🔧 Manutenções</button>
+                <button class="action-btn btn-docs"  data-docid="${v._docId}">📄 Documentos</button>
+            </div>
+        </div>`;
+    }
+
+    function attachEvents() {
+        document.querySelectorAll('.vehicle-info-item').forEach(item => {
+            item.addEventListener('mouseenter', function () { this.style.transform='translateX(8px) scale(1.02)'; this.style.transition='0.3s'; });
+            item.addEventListener('mouseleave', function () { this.style.transform=''; });
+        });
+        document.querySelectorAll('.btn-edit').forEach(b  => b.addEventListener('click',  () => openEditModal(b.dataset.docid)));
+        document.querySelectorAll('.btn-maint').forEach(b => b.addEventListener('click',  () => openMaintModal(b.dataset.docid, b.dataset.truckid)));
+        document.querySelectorAll('.btn-docs').forEach(b  => b.addEventListener('click',  () => openDocsModal(b.dataset.docid)));
+        document.querySelectorAll('.vehicle-card').forEach((card, i) => {
+            card.style.opacity='0'; card.style.transform='translateY(30px)';
+            setTimeout(() => { card.style.transition='all 0.6s ease'; card.style.opacity='1'; card.style.transform='translateY(0)'; }, 100+i*150);
+        });
+    }
+
+    // =============================================
+    // MODAL EDITAR — atualiza na coleção 'veiculos' pelo docId
+    // =============================================
+    async function openEditModal(docId) {
+        try {
+            const snap = await getDoc(doc(db, 'veiculos', docId));
+            if (!snap.exists()) { showError('Veículo não encontrado.'); return; }
+            const v = snap.data();
+            document.getElementById('editDocId').value  = docId;
+            document.getElementById('editMarca').value  = v.marca  || '';
+            document.getElementById('editModelo').value = v.modelo || '';
+            document.getElementById('editAno').value    = v.ano    || '';
+            document.getElementById('editCor').value    = v.cor    || '';
+            document.getElementById('editPlaca').value  = v.placa  || '';
+            document.getElementById('editMotor').value  = v.motor  || '';
+            document.getElementById('editKm').value     = v.kmatual || '';
+            document.getElementById('editTipo').value   = v.tipo   || 'principal';
+            openModal('modalEdit');
+        } catch (err) {
+            console.error('[Editar] Erro:', err);
+            showError('Erro ao abrir edição: ' + (err.code || err.message));
+        }
+    }
+
+    document.getElementById('saveEditBtn').addEventListener('click', async function () {
+        const docId  = document.getElementById('editDocId').value;
+        const marca  = document.getElementById('editMarca').value.trim();
+        const modelo = document.getElementById('editModelo').value.trim();
+        const placa  = document.getElementById('editPlaca').value.trim();
+        if (!marca || !modelo || !placa) { showWarning('Preencha Marca, Modelo e Placa.'); return; }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-btn"></span>Salvando...';
+
+        try {
+            const dados = {
+                marca,
+                modelo,
+                placa:    placa.toUpperCase(),
+                ano:      document.getElementById('editAno').value.trim(),
+                cor:      document.getElementById('editCor').value.trim(),
+                motor:    document.getElementById('editMotor').value.trim(),
+                kmatual:  Number(document.getElementById('editKm').value.replace(/\D/g,'')) || 0,
+                tipo:     document.getElementById('editTipo').value,
+                atualizadoEm: serverTimestamp(),
+                // garante que o iduser continua vinculado
+                iduser:   iduser,
+            };
+            console.log('[Editar] Salvando veiculos/', docId, dados);
+            await updateDoc(doc(db, 'veiculos', docId), dados);
+            showSuccess(`✅ ${modelo} atualizado!`);
+            closeModal('modalEdit');
+            await loadVehicles();
+        } catch (err) {
+            console.error('[Editar] Erro ao salvar:', err);
+            showError(err.code === 'permission-denied'
+                ? 'Permissão negada. Verifique as regras do Firestore.'
+                : 'Erro: ' + (err.code || err.message));
+        } finally {
+            this.disabled = false;
+            this.textContent = '💾 Salvar Alterações';
+        }
+    });
+
+    // =============================================
+    // MODAL MANUTENÇÕES
+    // Busca na coleção 'manutencoes' onde truckid == truckid do veículo
+    // =============================================
+    async function openMaintModal(docId, truckid) {
+        document.getElementById('maintDocId').value   = docId;
+        document.getElementById('maintTruckId').value = truckid;
+        document.getElementById('maintTipo').value    = '';
+        document.getElementById('maintData').value    = '';
+        document.getElementById('maintKm').value      = '';
+        document.getElementById('maintCusto').value   = '';
+
+        // Nome do veículo no header
+        try {
+            const snap = await getDoc(doc(db, 'veiculos', docId));
+            if (snap.exists()) {
+                const v = snap.data();
+                document.getElementById('maintVehicleName').textContent =
+                    `${v.marca||''} ${v.modelo||''} — Placa: ${v.placa||''} | ID: ${v.truckid||truckid}`;
+            }
+        } catch(_) {}
+
+        openModal('modalMaint');
+        await loadMaintList(truckid);
+    }
+
+    async function loadMaintList(truckid) {
+        const container = document.getElementById('maintList');
+        container.innerHTML = `<div class="vehicle-placeholder" style="padding:20px;">Carregando...</div>`;
+        try {
+            // Busca manutenções pelo truckid do veículo
+            const q = query(collection(db, 'manutencoes'), where('truckid', '==', truckid));
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                container.innerHTML = `<div class="vehicle-placeholder" style="padding:20px;">
+                    🔧 Nenhuma manutenção registrada para este veículo.
+                </div>`;
+                return;
+            }
+
+            const lista = [];
+            snap.forEach(d => lista.push({ _id: d.id, ...d.data() }));
+
+            // Ordena por data (campo ultmanutenção DD/MM/AAAA), mais recente primeiro
+            lista.sort((a, b) => {
+                const parse = s => { if (!s) return 0; const [d,m,y]=s.split('/'); return new Date(`${y}-${m}-${d}`).getTime(); };
+                return parse(b['ultmanutenção']||b.ultmanutencao) - parse(a['ultmanutenção']||a.ultmanutencao);
+            });
+
+            container.innerHTML = lista.map(m => `
+                <div class="manut-item">
+                    <div class="manut-header">
+                        <span class="manut-date">📅 ${m['ultmanutenção']||m.ultmanutencao||'-'}</span>
+                        <span class="manut-type">${m.tipo||m.descrictmnt||'-'}</span>
+                    </div>
+                    ${m.descrictmnt && m.descrictmnt !== m.tipo
+                        ? `<p style="font-size:13px;color:#ccc;margin:4px 0;">📝 ${m.descrictmnt}</p>` : ''}
+                    <p style="font-size:12px;color:#888;margin-top:4px;">
+                        ${m.kmatual ? `📍 ${Number(m.kmatual).toLocaleString('pt-BR')} km  ` : ''}
+                        ${m.customanuten ? `<span style="color:#4caf50;font-weight:bold;">R$ ${Number(m.customanuten).toLocaleString('pt-BR')}</span>` : ''}
+                    </p>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error('[Manut] Erro ao carregar:', err);
+            container.innerHTML = `<div class="vehicle-placeholder" style="padding:20px;color:#f44336;">
+                Erro: ${err.code||err.message}
+            </div>`;
+        }
+    }
+
+    // =============================================
+    // MÁSCARAS AUTOMÁTICAS
+    // =============================================
+
+    // DATA: digita 12092025 → vira 12/09/2025
+    document.getElementById('maintData').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length > 4) v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
+        else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,2})/, '$1/$2');
+        this.value = v;
+    });
+
+    // KM — manutenção: digita 70000 → vira 70.000
+    document.getElementById('maintKm').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        this.value = v ? parseInt(v).toLocaleString('pt-BR') : '';
+    });
+
+    // CUSTO: digita 1250 → vira 1.250
+    document.getElementById('maintCusto').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        this.value = v ? parseInt(v).toLocaleString('pt-BR') : '';
+    });
+
+    // KM — modal editar
+    document.getElementById('editKm').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        this.value = v ? parseInt(v).toLocaleString('pt-BR') : '';
+    });
+
+    // KM — modal adicionar
+    document.getElementById('addKm').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '');
+        this.value = v ? parseInt(v).toLocaleString('pt-BR') : '';
+    });
+
+    document.getElementById('saveMaintBtn').addEventListener('click', async function () {
+        const truckid = document.getElementById('maintTruckId').value;
+        const docId   = document.getElementById('maintDocId').value;
+        const tipo    = document.getElementById('maintTipo').value;
+        const data    = document.getElementById('maintData').value.trim();
+
+        if (!tipo || !data) { showWarning('Preencha o Tipo e a Data.'); return; }
+        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) { showWarning('Data inválida. Use DD/MM/AAAA.'); return; }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-btn"></span>Registrando...';
+
+        try {
+            // Estrutura IGUAL à do banco que você já criou
+            const registro = {
+                truckid:          truckid,           // vincula ao veículo
+                iduser:           iduser,             // vincula ao usuário
+                tipo:             tipo,               // "Troca de óleo"
+                descrictmnt:      tipo,               // mesmo valor que tipo
+                'ultmanutenção':  data,               // "12/09/2025"
+                kmatual:          Number(document.getElementById('maintKm').value.replace(/\D/g,''))    || 0,
+                customanuten:     Number(document.getElementById('maintCusto').value.replace(/\D/g,'')) || 0,
+                criadoEm:         serverTimestamp(),
+            };
+
+            console.log('[Manut] Salvando em manutencoes:', registro);
+            await addDoc(collection(db, 'manutencoes'), registro);
+
+            // Atualiza o campo ultmanutenção no documento do veículo
+            await updateDoc(doc(db, 'veiculos', docId), {
+                'ultmanutenção': data,
+                kmatual: Number(document.getElementById('maintKm').value.replace(/\D/g,'')) || 0,
+                descrictmnt: tipo,
+                customanuten: Number(document.getElementById('maintCusto').value.replace(/\D/g,'')) || 0,
+            });
+
+            showSuccess('✅ Manutenção registrada!');
+            document.getElementById('maintTipo').value  = '';
+            document.getElementById('maintData').value  = '';
+            document.getElementById('maintKm').value    = '';
+            document.getElementById('maintCusto').value = '';
+            await loadMaintList(truckid);
+            await loadVehicles();
+        } catch (err) {
+            console.error('[Manut] Erro:', err);
+            showError(err.code === 'permission-denied'
+                ? 'Permissão negada. Verifique as regras do Firestore.'
+                : 'Erro: ' + (err.code || err.message));
+        } finally {
+            this.disabled = false;
+            this.textContent = '✅ Registrar';
+        }
+    });
+
+    // =============================================
+    // MODAL DOCUMENTOS
+    // =============================================
+    function openDocsModal(docId) {
+        const card = document.querySelector(`.vehicle-card[data-docid="${docId}"]`);
+        if (card) {
+            document.getElementById('docsVehicleName').textContent =
+                `${card.dataset.modelo} — Placa: ${card.dataset.placa}`;
+        }
+        openModal('modalDocs');
+    }
+
+    // =============================================
+    // ADICIONAR VEÍCULO
+    // Salva na coleção 'veiculos' com iduser e truckid gerado
+    // =============================================
+    document.getElementById('addVehicleBtn').addEventListener('click', () => {
+        ['addMarca','addModelo','addAno','addCor','addPlaca','addMotor'].forEach(id => { document.getElementById(id).value=''; });
+        document.getElementById('addKm').value   = '';
+        document.getElementById('addTipo').value = 'principal';
+        openModal('modalAdd');
+    });
+
+    document.getElementById('saveAddBtn').addEventListener('click', async function () {
+        const marca  = document.getElementById('addMarca').value.trim();
+        const modelo = document.getElementById('addModelo').value.trim();
+        const placa  = document.getElementById('addPlaca').value.trim();
+        if (!marca || !modelo || !placa) { showWarning('Preencha Marca, Modelo e Placa.'); return; }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-btn"></span>Cadastrando...';
+
+        try {
+            const truckid = gerarTruckId();
+
+            // Estrutura IGUAL à do banco que você já criou
+            const novoVeiculo = {
+                truckid:          truckid,           // ID único do caminhão
+                iduser:           iduser,             // "thairon_master" — dono do veículo
+                marca:            marca,
+                modelo:           modelo,
+                placa:            placa.toUpperCase(),
+                ano:              document.getElementById('addAno').value.trim(),
+                cor:              document.getElementById('addCor').value.trim(),
+                motor:            document.getElementById('addMotor').value.trim(),
+                kmatual:          Number(document.getElementById('addKm').value.replace(/\D/g,'')) || 0,
+                tipo:             document.getElementById('addTipo').value,
+                'ultmanutenção':  '-',
+                descrictmnt:      '',
+                customanuten:     0,
+                criadoEm:         serverTimestamp(),
+            };
+
+            console.log('[Add Veículo] Salvando em veiculos:', novoVeiculo);
+            const ref = await addDoc(collection(db, 'veiculos'), novoVeiculo);
+            console.log('[Add Veículo] Documento criado:', ref.id, '| truckid:', truckid);
+
+            showSuccess(`🚛 ${marca} ${modelo} cadastrado! ID: ${truckid}`);
+            closeModal('modalAdd');
+            await loadVehicles();
+        } catch (err) {
+            console.error('[Add Veículo] Erro:', err);
+            showError(err.code === 'permission-denied'
+                ? 'Permissão negada. Verifique as regras do Firestore.'
+                : 'Erro: ' + (err.code || err.message));
+        } finally {
+            this.disabled = false;
+            this.textContent = '🚛 Cadastrar Veículo';
+        }
+    });
+</script>
 </body>
 </html>

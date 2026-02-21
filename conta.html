@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Conta - Socorro Diesel PO Pro</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .history-empty { text-align:center; color:#666; padding:30px; font-size:14px; line-height:1.8; }
+        .erro-banner {
+            padding:12px 16px; border-radius:10px; margin-bottom:16px;
+            font-size:13px; background:rgba(244,67,54,0.15);
+            color:#f44336; border:1px solid rgba(244,67,54,0.3); display:none;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,85 +27,55 @@
 <div class="conta-container">
     <h1>👤 Minha Conta</h1>
 
+    <div id="erroBanner" class="erro-banner"></div>
+
+    <!-- Dados do cliente — coleção 'clientes/{uid}' -->
     <div class="info-section">
         <div class="info">
             <span class="info-label">Nome:</span>
-            <span class="info-value">João Enrique</span>
+            <span class="info-value" id="infoNome">Carregando...</span>
         </div>
-
         <div class="info">
-            <span class="info-label">Veículo:</span>
-            <span class="info-value">Scania R450</span>
+            <span class="info-label">E-mail:</span>
+            <span class="info-value" id="infoEmail">Carregando...</span>
         </div>
-
+        <div class="info">
+            <span class="info-label">CPF:</span>
+            <span class="info-value" id="infoUsuario">Carregando...</span>
+        </div>
         <div class="info">
             <span class="info-label">Plano:</span>
             <span class="info-value">Atendimento Pro Max</span>
         </div>
-
         <div class="info">
-            <span class="info-label">Telefone:</span>
-            <span class="info-value">(31) 998765-4321</span>
+            <span class="info-label">Membro desde:</span>
+            <span class="info-value" id="infoCriadoEm">Carregando...</span>
         </div>
     </div>
 
+    <!-- Histórico — coleção 'atendimentos' filtrada por iduser -->
     <div class="history-section">
         <h2>📋 Histórico de Atendimentos</h2>
-        
-        <div class="history-item">
-            <div class="history-header">
-                <span class="history-date">15/02/2025 - 14:30</span>
-                <span class="history-status status-completed">Concluído</span>
-            </div>
-            <div class="history-body">
-                <p><strong>Serviço:</strong> Pane Elétrica</p>
-                <p><strong>Local:</strong> BR-381, Km 245 - MG</p>
-                <p><strong>Técnico:</strong> Carlos Silva</p>
-                <p><strong>Valor:</strong> R$ 320,00</p>
-            </div>
-        </div>
-
-        <div class="history-item">
-            <div class="history-header">
-                <span class="history-date">08/02/2025 - 09:15</span>
-                <span class="history-status status-completed">Concluído</span>
-            </div>
-            <div class="history-body">
-                <p><strong>Serviço:</strong> Problema na Bateria</p>
-                <p><strong>Local:</strong> BR-116, Km 580 - SP</p>
-                <p><strong>Técnico:</strong> Roberto Santos</p>
-                <p><strong>Valor:</strong> R$ 180,00</p>
-            </div>
-        </div>
-
-        <div class="history-item">
-            <div class="history-header">
-                <span class="history-date">01/02/2025 - 22:45</span>
-                <span class="history-status status-completed">Concluído</span>
-            </div>
-            <div class="history-body">
-                <p><strong>Serviço:</strong> Falta de Combustível</p>
-                <p><strong>Local:</strong> BR-040, Km 120 - RJ</p>
-                <p><strong>Técnico:</strong> Pedro Oliveira</p>
-                <p><strong>Valor:</strong> R$ 220,00</p>
-            </div>
+        <div id="historyList">
+            <div class="history-empty">Carregando histórico...</div>
         </div>
     </div>
 
+    <!-- Estatísticas calculadas dos atendimentos do usuário -->
     <div class="stats-section">
         <h2>📊 Estatísticas</h2>
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">12</div>
+                <div class="stat-number" id="statTotal">0</div>
                 <div class="stat-label">Atendimentos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">23 min</div>
-                <div class="stat-label">Tempo Médio</div>
+                <div class="stat-number" id="statValor">R$ 0</div>
+                <div class="stat-label">Total Gasto</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">98%</div>
-                <div class="stat-label">Satisfação</div>
+                <div class="stat-number" id="statServicos">0</div>
+                <div class="stat-label">Serviços</div>
             </div>
         </div>
     </div>
@@ -106,7 +84,240 @@
 </div>
 
 <script src="js/toast.js"></script>
-<script src="js/conta.js"></script>
+<script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+        doc, getDoc, collection, getDocs, query, where
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    let currentUser = null;
+    let iduser      = null;
+
+    // =============================================
+    // AUTENTICAÇÃO
+    // =============================================
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            showWarning('Você precisa estar logado.');
+            setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+            return;
+        }
+        currentUser = user;
+
+        await loadUserData(user);
+        await loadHistory();
+        animateCards();
+    });
+
+    // =============================================
+    // DADOS DO PERFIL — lê clientes/{uid}
+    // =============================================
+    async function loadUserData(user) {
+        try {
+            console.log('[Conta] Lendo clientes/', user.uid);
+            const snap = await getDoc(doc(db, 'clientes', user.uid));
+
+            if (snap.exists()) {
+                const d = snap.data();
+                iduser = d.iduser; // salva para usar na busca do histórico
+                console.log('[Conta] iduser:', iduser);
+                document.getElementById('infoNome').textContent    = d.nome   || user.displayName || '-';
+                document.getElementById('infoEmail').textContent   = d.email  || user.email       || '-';
+                // Formata o CPF: 12345678901 → 123.456.789-01
+                const cpfFormatado = d.iduser
+                    ? d.iduser.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+                    : '-';
+                document.getElementById('infoUsuario').textContent = cpfFormatado;
+                if (d.criadoEm) {
+                    const dt = d.criadoEm.toDate ? d.criadoEm.toDate() : new Date(d.criadoEm);
+                    document.getElementById('infoCriadoEm').textContent = dt.toLocaleDateString('pt-BR');
+                }
+            } else {
+                console.warn('[Conta] Documento não encontrado para uid:', user.uid);
+                iduser = user.uid;
+                document.getElementById('infoNome').textContent  = user.displayName || '-';
+                document.getElementById('infoEmail').textContent = user.email        || '-';
+            }
+        } catch (err) {
+            console.error('[Conta] Erro ao carregar perfil:', err);
+            iduser = user.uid;
+            mostrarErro(err);
+        }
+    }
+
+    // =============================================
+    // HISTÓRICO — busca na coleção 'atendimentos' por iduser
+    // =============================================
+    async function loadHistory() {
+        const container = document.getElementById('historyList');
+
+        try {
+            console.log('[Conta] Buscando atendimentos de iduser:', iduser);
+
+            const q = query(
+                collection(db, 'atendimentos'),
+                where('iduser', '==', iduser)
+            );
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                container.innerHTML = `<div class="history-empty">
+                    📋 Nenhum atendimento registrado ainda.<br>
+                    <span style="font-size:12px;color:#555;">
+                        Após solicitar socorro, o registro aparece aqui automaticamente.
+                    </span>
+                </div>`;
+                updateStats([]);
+                return;
+            }
+
+            const lista = [];
+            snap.forEach(d => {
+                console.log('[Conta] Atendimento:', d.id, d.data());
+                lista.push({ _id: d.id, ...d.data() });
+            });
+
+            // Ordena mais recente primeiro pelo Timestamp
+            lista.sort((a, b) => {
+                const ta = a.criadoEm?.toMillis ? a.criadoEm.toMillis() : 0;
+                const tb = b.criadoEm?.toMillis ? b.criadoEm.toMillis() : 0;
+                return tb - ta;
+            });
+
+            container.innerHTML = lista.map(renderHistoryItem).join('');
+            attachHistoryEvents();
+            updateStats(lista);
+
+        } catch (err) {
+            console.error('[Conta] Erro histórico:', err);
+            container.innerHTML = `<div class="history-empty" style="color:#f44336;">
+                ❌ Erro: ${err.code || err.message}
+            </div>`;
+            mostrarErro(err);
+        }
+    }
+
+    // =============================================
+    // RENDERIZAR ITEM DO HISTÓRICO
+    // Campos: servico, valor, tempo, placa/veiculo, localizacao, latitude, longitude, dataHora
+    // =============================================
+    function renderHistoryItem(a) {
+        let dataFormatada = '-';
+        if (a.criadoEm?.toDate) {
+            const d = a.criadoEm.toDate();
+            dataFormatada = d.toLocaleDateString('pt-BR') + ' - ' +
+                d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+        } else if (a.dataHora) {
+            dataFormatada = a.dataHora;
+        }
+
+        return `
+        <div class="history-item">
+            <div class="history-header">
+                <span class="history-date">${dataFormatada}</span>
+                <span class="history-status status-completed">Concluído</span>
+            </div>
+            <div class="history-body">
+                <p><strong>Serviço:</strong> ${a.servico || '-'}</p>
+                <p><strong>Veículo:</strong> ${a.placa || a.veiculo || '-'}</p>
+                <p><strong>Local:</strong> ${a.localizacao || a.local || '-'}</p>
+                ${a.descricao ? `<p><strong>Descrição:</strong> ${a.descricao}</p>` : ''}
+                <p style="font-weight:bold;color:#4caf50;">
+                    <strong style="color:#ccc;">Valor estimado:</strong> R$ ${a.valor || '-'}
+                </p>
+                <p><strong>Tempo estimado:</strong> ${a.tempo ? a.tempo + ' min' : '-'}</p>
+                ${a.latitude && a.longitude
+                    ? `<p><a href="https://www.google.com/maps?q=${a.latitude},${a.longitude}"
+                        target="_blank" style="color:#2196f3;font-size:13px;">
+                        🗺️ Ver no Google Maps</a></p>` : ''}
+            </div>
+        </div>`;
+    }
+
+    // =============================================
+    // ESTATÍSTICAS
+    // =============================================
+    function updateStats(lista) {
+        const total = lista.length;
+        const totalValor = lista.reduce((acc, a) => {
+            const v = parseFloat((a.valor||'0').toString().replace(',','.'));
+            return acc + (isNaN(v) ? 0 : v);
+        }, 0);
+        const servicos = new Set(lista.map(a => a.servico).filter(Boolean)).size;
+
+        animNum('statTotal',    total);
+        animNum('statServicos', servicos);
+        document.getElementById('statValor').textContent =
+            totalValor > 0 ? 'R$ ' + totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 0 }) : 'R$ 0';
+    }
+
+    function animNum(id, to) {
+        const el = document.getElementById(id);
+        if (!el || to === 0) { if(el) el.textContent='0'; return; }
+        let cur = 0; const inc = to / 30;
+        const t = setInterval(() => {
+            cur += inc;
+            if (cur >= to) { el.textContent = to; clearInterval(t); }
+            else { el.textContent = Math.floor(cur); }
+        }, 40);
+    }
+
+    function attachHistoryEvents() {
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.addEventListener('mouseenter', function () { this.style.transform='translateX(5px)'; this.style.transition='0.3s'; });
+            item.addEventListener('mouseleave', function () { this.style.transform='translateX(0)'; });
+            if (window.innerWidth < 768) {
+                const header = item.querySelector('.history-header');
+                const body   = item.querySelector('.history-body');
+                if (header && body) {
+                    body.style.maxHeight='0'; body.style.overflow='hidden'; body.style.transition='max-height 0.3s';
+                    header.style.cursor='pointer';
+                    header.addEventListener('click', () => {
+                        body.style.maxHeight = (body.style.maxHeight==='0px'||body.style.maxHeight==='0')
+                            ? body.scrollHeight+'px' : '0';
+                    });
+                }
+            }
+        });
+    }
+
+    function animateCards() {
+        const info = document.querySelector('.info-section');
+        if (info) {
+            info.style.opacity='0'; info.style.transform='translateY(20px)';
+            setTimeout(() => { info.style.transition='all 0.5s ease'; info.style.opacity='1'; info.style.transform='translateY(0)'; }, 100);
+        }
+        document.querySelectorAll('.stat-card').forEach((card, i) => {
+            card.style.opacity='0'; card.style.transform='scale(0.8)';
+            setTimeout(() => { card.style.transition='all 0.5s ease'; card.style.opacity='1'; card.style.transform='scale(1)'; }, 400+i*100);
+        });
+    }
+
+    function mostrarErro(err) {
+        const b = document.getElementById('erroBanner');
+        b.style.display = 'block';
+        if (err.code === 'permission-denied') {
+            b.innerHTML = `⛔ <strong>Firestore bloqueando.</strong> Atualize as regras — veja CONFIGURACAO.md.`;
+        } else {
+            b.innerHTML = `⚠️ ${err.code || err.message}. Verifique o firebase-config.js.`;
+        }
+    }
+
+    // =============================================
+    // LOGOUT
+    // =============================================
+    document.getElementById('logoutBtn').addEventListener('click', async function () {
+        if (!confirm('Tem certeza que deseja sair?')) return;
+        this.textContent = '🔄 Saindo...'; this.disabled = true;
+        try {
+            await signOut(auth);
+            showSuccess('Até logo!');
+            setTimeout(() => { window.location.href = 'home.html'; }, 1000);
+        } catch (err) {
+            showError('Erro ao sair.'); this.textContent='🚪 Sair da Conta'; this.disabled=false;
+        }
+    });
+</script>
 </body>
 </html>

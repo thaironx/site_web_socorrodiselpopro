@@ -5,15 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Socorro - Socorro Diesel PO Pro</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .location-tabs { display:flex; gap:10px; margin-bottom:15px; }
+        .location-tab {
+            flex:1; padding:10px; border:2px solid #3a3a3a; border-radius:10px;
+            background:#3a3a3a; color:#bbb; font-weight:bold; cursor:pointer; transition:0.3s; font-size:13px; text-align:center;
+        }
+        .location-tab.active { border-color:#d32f2f; background:linear-gradient(135deg,#d32f2f 0%,#b71c1c 100%); color:white; }
+        .location-tab:hover:not(.active) { border-color:#666; color:white; }
+        .location-panel { display:none; }
+        .location-panel.active { display:block; }
+        #manualAddressInput {
+            width:100%; padding:12px; border-radius:10px; border:2px solid #3a3a3a;
+            background:#3a3a3a; color:white; font-size:14px; font-family:inherit; transition:0.3s; margin-bottom:10px;
+        }
+        #manualAddressInput:focus { outline:none; border-color:#d32f2f; background:#2a2a2a; }
+        #manualAddressInput::placeholder { color:#777; }
+    </style>
 </head>
 <body>
 
 <header class="header">
     <div class="logo-container">
         <div class="menu-icon" id="menuToggle">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </div>
         <img src="img/logo.png" alt="Socorro Diesel Pro" class="logo-image">
         <img src="img/nomelogo.png" alt="Socorro Diesel Pro" class="logo-image">
@@ -21,10 +36,9 @@
     <a href="home.html" class="back-btn">⬅ Voltar</a>
 </header>
 
-<!-- Navigation -->
 <nav class="nav" id="mainNav">
-    <a href="home.html" class="nav-item">≡ PAGINA INICIAL</a>
-    <a href="servic.html" class="nav-item">NOSSOS SERVIÇOS</a>
+    <a href="home.html"    class="nav-item">≡ PAGINA INICIAL</a>
+    <a href="servic.html"  class="nav-item">NOSSOS SERVIÇOS</a>
     <a href="veiculos.html" class="nav-item">MEUS VEÍCULOS</a>
 </nav>
 
@@ -34,60 +48,60 @@
     <!-- Localização -->
     <div class="card">
         <h3>📍 Localização</h3>
-        <button class="location-btn" id="getLocationBtn">
-            <span id="locationBtnText">Usar minha localização</span>
-        </button>
-        <p id="location-text" class="location-display"></p>
-        <input type="hidden" id="latitude" value="">
-        <input type="hidden" id="longitude" value="">
+        <div class="location-tabs">
+            <button class="location-tab active" id="tabGps" onclick="switchTab('gps')">📡 Usar GPS</button>
+            <button class="location-tab"        id="tabManual" onclick="switchTab('manual')">✏️ Digitar Endereço</button>
+        </div>
+        <div class="location-panel active" id="panelGps">
+            <button class="location-btn" id="getLocationBtn">
+                <span id="locationBtnText">Usar minha localização</span>
+            </button>
+            <p id="locationText" class="location-display"></p>
+        </div>
+        <div class="location-panel" id="panelManual">
+            <input type="text" id="manualAddressInput" placeholder="Ex: BR-381, Km 245 - Betim, MG">
+            <p style="font-size:12px;color:#888;margin-top:4px;">
+                Informe rodovia, cidade, estado ou ponto de referência
+            </p>
+        </div>
+        <input type="hidden" id="latitude">
+        <input type="hidden" id="longitude">
     </div>
 
     <!-- Tipo de problema -->
     <div class="card">
         <h3>⚙ Tipo de Problema</h3>
         <div class="problem-grid">
-            <div class="problem" data-service="Pane Mecânica" data-price="280" data-time="25-35">
-                <span class="problem-icon">🔧</span>
-                <span class="problem-name">Pane Mecânica</span>
+            <div class="problem" data-service="Pane Mecânica"       data-price="280" data-time="25-35">
+                <span class="problem-icon">🔧</span><span class="problem-name">Pane Mecânica</span>
             </div>
             <div class="problem" data-service="Problema na Bateria" data-price="180" data-time="15-25">
-                <span class="problem-icon">🔋</span>
-                <span class="problem-name">Bateria</span>
+                <span class="problem-icon">🔋</span><span class="problem-name">Bateria</span>
             </div>
-            <div class="problem" data-service="Problema no Pneu" data-price="200" data-time="20-30">
-                <span class="problem-icon">🛞</span>
-                <span class="problem-name">Pneu</span>
+            <div class="problem" data-service="Problema no Pneu"    data-price="200" data-time="20-30">
+                <span class="problem-icon">🛞</span><span class="problem-name">Pneu</span>
             </div>
             <div class="problem" data-service="Falta de Combustível" data-price="220" data-time="20-30">
-                <span class="problem-icon">⛽</span>
-                <span class="problem-name">Combustível</span>
+                <span class="problem-icon">⛽</span><span class="problem-name">Combustível</span>
             </div>
-            <div class="problem" data-service="Reboque Emergencial" data-price="450" data-time="30-45">
-                <span class="problem-icon">🚛</span>
-                <span class="problem-name">Reboque</span>
+            <div class="problem" data-service="Reboque Emergencial"  data-price="450" data-time="30-45">
+                <span class="problem-icon">🚛</span><span class="problem-name">Reboque</span>
             </div>
-            <div class="problem" data-service="Pane Elétrica" data-price="320" data-time="30-40">
-                <span class="problem-icon">🔌</span>
-                <span class="problem-name">Elétrica</span>
+            <div class="problem" data-service="Pane Elétrica"        data-price="320" data-time="30-40">
+                <span class="problem-icon">🔌</span><span class="problem-name">Elétrica</span>
             </div>
         </div>
     </div>
 
-    <!-- Informações do serviço selecionado -->
+    <!-- Detalhes -->
     <div class="card service-details" id="serviceDetails" style="display:none;">
         <h3>💰 Detalhes do Serviço</h3>
-        <div class="detail-row">
-            <span class="detail-label">Serviço:</span>
-            <span class="detail-value" id="selectedService">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Valor estimado:</span>
-            <span class="detail-value price-highlight" id="servicePrice">R$ 0,00</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Tempo estimado:</span>
-            <span class="detail-value time-highlight" id="serviceTime">-</span>
-        </div>
+        <div class="detail-row"><span class="detail-label">Serviço:</span>
+            <span class="detail-value" id="selectedService">-</span></div>
+        <div class="detail-row"><span class="detail-label">Valor estimado:</span>
+            <span class="detail-value price-highlight" id="servicePrice">-</span></div>
+        <div class="detail-row"><span class="detail-label">Tempo estimado:</span>
+            <span class="detail-value time-highlight" id="serviceTime">-</span></div>
         <p class="detail-note">* Valores podem variar conforme localização e horário</p>
     </div>
 
@@ -100,46 +114,250 @@
     <!-- Veículo -->
     <div class="card">
         <h3>🚛 Veículo</h3>
-        <input type="text" id="vehiclePlate" placeholder="Placa do veículo (ex: ABC-1234 ou ABC1D23)" maxlength="8">
-        <p id="plateError" style="display:none; color:#f44336; margin-top:8px; font-size:13px; font-weight:bold;">⚠ Placa inválida. Use o padrão antigo (ABC-1234 / ABC1234) ou Mercosul (ABC1D23).</p>
+        <input type="text" id="vehiclePlate" placeholder="Placa (ex: ABC1234 ou ABC-1234)" maxlength="8">
+        <p id="plateError" style="display:none;color:#f44336;margin-top:8px;font-size:13px;font-weight:bold;">
+            ⚠ Placa inválida.
+        </p>
     </div>
 
     <button class="confirm-btn" id="confirmBtn">🚨 CONFIRMAR SOLICITAÇÃO</button>
 
-    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay" style="display:none;">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p>Redirecionando para o WhatsApp...</p>
+            <p>Registrando e abrindo WhatsApp...</p>
         </div>
     </div>
 </div>
 
 <script src="js/toast.js"></script>
 <script src="js/nav.js"></script>
-<script src="js/servic.js"></script>
-<script>
-// Validação da placa em tempo real
-(function() {
-    function validatePlate(plate) {
-        const cleaned = plate.replace(/[-\s]/g, '').toUpperCase();
-        const oldFormat = /^[A-Z]{3}\d{4}$/;
-        const mercosulFormat = /^[A-Z]{3}\d[A-Z]\d{2}$/;
-        return oldFormat.test(cleaned) || mercosulFormat.test(cleaned);
+<script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+        collection, doc, getDoc, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const WHATSAPP = '5531993452813';
+
+    let currentUser    = null;
+    let iduser         = null;
+    let selectedService = null;
+    let selectedPrice  = null;
+    let selectedTime   = null;
+    let userLat        = null;
+    let userLng        = null;
+    let userLocation   = null;
+    let locationMode   = 'gps';
+
+    // Tenta pegar o iduser do cliente logado
+    onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
+        if (user) {
+            try {
+                const snap = await getDoc(doc(db, 'clientes', user.uid));
+                if (snap.exists()) iduser = snap.data().iduser;
+                console.log('[Serviço] Usuário logado:', user.uid, '| iduser:', iduser);
+            } catch(_) {}
+        }
+    });
+
+    // Troca de aba de localização
+    window.switchTab = function (mode) {
+        locationMode = mode;
+        document.getElementById('tabGps').classList.toggle('active', mode === 'gps');
+        document.getElementById('tabManual').classList.toggle('active', mode === 'manual');
+        document.getElementById('panelGps').classList.toggle('active', mode === 'gps');
+        document.getElementById('panelManual').classList.toggle('active', mode === 'manual');
+        userLat = null; userLng = null; userLocation = null;
+        document.getElementById('locationText').textContent = '';
+        const btn = document.getElementById('getLocationBtn');
+        btn.disabled = false; btn.style.background = '';
+        document.getElementById('locationBtnText').textContent = 'Usar minha localização';
+    };
+
+    // Seleção do problema
+    document.querySelectorAll('.problem').forEach(p => {
+        p.addEventListener('click', function () {
+            document.querySelectorAll('.problem').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+            selectedService = this.dataset.service;
+            selectedPrice   = this.dataset.price;
+            selectedTime    = this.dataset.time;
+            document.getElementById('selectedService').textContent = selectedService;
+            document.getElementById('servicePrice').textContent    = `R$ ${selectedPrice},00`;
+            document.getElementById('serviceTime').textContent     = `${selectedTime} minutos`;
+            const sd = document.getElementById('serviceDetails');
+            sd.style.display = 'block'; sd.style.animation = 'slideIn 0.4s ease';
+        });
+    });
+
+    // GPS
+    document.getElementById('getLocationBtn').addEventListener('click', function () {
+        if (!navigator.geolocation) { showError('Geolocalização não suportada.'); return; }
+        this.disabled = true;
+        document.getElementById('locationBtnText').textContent = 'Obtendo localização...';
+
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                userLat = pos.coords.latitude;
+                userLng = pos.coords.longitude;
+                document.getElementById('latitude').value  = userLat;
+                document.getElementById('longitude').value = userLng;
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLat}&lon=${userLng}&accept-language=pt-BR`)
+                    .then(r => r.json())
+                    .then(d => {
+                        userLocation = d.display_name || `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+                        const el = document.getElementById('locationText');
+                        el.textContent = `📍 ${userLocation}`;
+                        el.style.color = '#4caf50';
+                    })
+                    .catch(() => { userLocation = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`; });
+                document.getElementById('locationBtnText').textContent = '✓ Localização obtida';
+                document.getElementById('getLocationBtn').style.background = 'linear-gradient(135deg,#4caf50,#2e7d32)';
+                showSuccess('Localização obtida!');
+            },
+            err => {
+                const msgs = { 1:'Acesso negado.', 2:'Localização indisponível.', 3:'Tempo esgotado.' };
+                showError(msgs[err.code] || 'Erro ao obter localização.');
+                document.getElementById('getLocationBtn').disabled = false;
+                document.getElementById('locationBtnText').textContent = 'Tentar novamente';
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    });
+
+    // Placa
+    const validatePlate = p => {
+        const c = p.replace(/[-\s]/g,'').toUpperCase();
+        return /^[A-Z]{3}\d{4}$/.test(c) || /^[A-Z]{3}\d[A-Z]\d{2}$/.test(c);
+    };
+    document.getElementById('vehiclePlate').addEventListener('input', function () {
+        document.getElementById('plateError').style.display =
+            (this.value.trim() && !validatePlate(this.value.trim())) ? 'block' : 'none';
+    });
+
+    // =============================================
+    // CONFIRMAR SOLICITAÇÃO
+    // =============================================
+    document.getElementById('confirmBtn').addEventListener('click', async function () {
+        // Determina localização final
+        let finalLocation = null;
+        if (locationMode === 'manual') {
+            const manual = document.getElementById('manualAddressInput').value.trim();
+            if (!manual) { showWarning('Informe o endereço.'); document.getElementById('manualAddressInput').focus(); return; }
+            finalLocation = manual; userLocation = manual;
+        } else {
+            finalLocation = userLocation;
+        }
+
+        if (!selectedService)   { showWarning('Selecione o tipo de problema.'); return; }
+        if (!finalLocation)     { showWarning('Informe sua localização.'); return; }
+
+        const placa = document.getElementById('vehiclePlate').value.trim();
+        if (!placa) { showWarning('Informe a placa do veículo.'); document.getElementById('vehiclePlate').focus(); return; }
+        if (!validatePlate(placa)) { showWarning('Placa inválida.'); return; }
+
+        const descricao = document.getElementById('description').value.trim();
+
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        this.disabled = true;
+
+        // =============================================
+        // SALVA NA COLEÇÃO 'atendimentos'
+        // Vinculado ao iduser do cliente logado
+        // =============================================
+        try {
+            const agora = new Date();
+            const dataHora = agora.toLocaleDateString('pt-BR') + ' - ' +
+                agora.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+
+            const atendimento = {
+                // Vínculo com o cliente
+                iduser:       iduser || (currentUser?.uid || 'anonimo'),
+                uid:          currentUser?.uid || null,
+
+                // Dados do serviço
+                servico:      selectedService,
+                valor:        selectedPrice + ',00',
+                tempo:        selectedTime,
+
+                // Dados do veículo
+                placa:        placa.toUpperCase(),
+                veiculo:      placa.toUpperCase(),
+
+                // Localização
+                localizacao:  finalLocation,
+                latitude:     userLat  || null,
+                longitude:    userLng  || null,
+
+                // Extra
+                descricao:    descricao || '',
+                dataHora:     dataHora,
+                status:       'solicitado',
+                criadoEm:     serverTimestamp(),
+            };
+
+            console.log('[Serviço] Salvando em atendimentos:', atendimento);
+            const ref = await addDoc(collection(db, 'atendimentos'), atendimento);
+            console.log('[Serviço] Atendimento salvo:', ref.id);
+
+        } catch (err) {
+            // Não bloqueia o WhatsApp se o save falhar
+            console.error('[Serviço] Erro ao salvar atendimento:', err.code, err.message);
+        }
+
+        // Abre WhatsApp após salvar
+        setTimeout(() => openWhatsApp(placa, descricao, finalLocation), 1200);
+    });
+
+    function openWhatsApp(placa, descricao, location) {
+        let msg = `🚨 *SOLICITAÇÃO DE SOCORRO* 🚨\n\n`;
+        msg += `📋 *Serviço:* ${selectedService}\n`;
+        msg += `💰 *Valor estimado:* R$ ${selectedPrice},00\n`;
+        msg += `⏱ *Tempo estimado:* ${selectedTime} minutos\n\n`;
+        msg += `🚛 *Veículo:* ${placa}\n`;
+        msg += `📍 *Localização:* ${location}\n`;
+        if (userLat && userLng) {
+            msg += `🗺 *Google Maps:* https://www.google.com/maps?q=${userLat},${userLng}\n`;
+        }
+        if (descricao) msg += `\n📝 *Descrição:* ${descricao}\n`;
+        msg += `\n_Via Socorro Diesel Pro_`;
+
+        const url = /Android|iPhone|iPad/i.test(navigator.userAgent)
+            ? `https://api.whatsapp.com/send?phone=${WHATSAPP}&text=${encodeURIComponent(msg)}`
+            : `https://web.whatsapp.com/send?phone=${WHATSAPP}&text=${encodeURIComponent(msg)}`;
+
+        window.open(url, '_blank');
+
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('confirmBtn').disabled = false;
+            // Mensagem de sucesso
+            const div = document.createElement('div');
+            div.innerHTML = `
+            <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+                background:linear-gradient(135deg,#2e7d32,#1b5e20);padding:30px;
+                border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.5);
+                text-align:center;z-index:10000;animation:successPop 0.5s ease;">
+                <div style="font-size:50px;margin-bottom:15px;">✓</div>
+                <h2>Solicitação Enviada!</h2>
+                <p>Aguarde retorno via WhatsApp</p>
+                <p style="font-size:13px;opacity:0.8;">Tempo estimado: ${selectedTime} min</p>
+                ${iduser ? `<p style="font-size:12px;opacity:0.7;margin-top:8px;">📋 Salvo no seu histórico</p>` : ''}
+            </div>`;
+            document.body.appendChild(div);
+            setTimeout(() => { div.style.opacity='0'; div.style.transition='0.5s'; setTimeout(()=>div.remove(),500); }, 4000);
+        }, 1000);
     }
 
-    const vehiclePlateInput = document.getElementById('vehiclePlate');
-    const plateError = document.getElementById('plateError');
-
-    vehiclePlateInput.addEventListener('input', function() {
-        if (this.value.trim() === '') {
-            plateError.style.display = 'none';
-            return;
-        }
-        plateError.style.display = validatePlate(this.value.trim()) ? 'none' : 'block';
-    });
-})();
+    const s = document.createElement('style');
+    s.textContent = `
+        @keyframes successPop { 0%{transform:translate(-50%,-50%) scale(0.5);opacity:0} 50%{transform:translate(-50%,-50%) scale(1.1)} 100%{transform:translate(-50%,-50%) scale(1);opacity:1} }
+        @keyframes slideIn { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    `;
+    document.head.appendChild(s);
 </script>
-
 </body>
 </html>

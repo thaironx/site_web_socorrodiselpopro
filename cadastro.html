@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - Socorro Diesel PO Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container { max-width: 480px; margin: 40px auto; padding: 20px; }
+        .auth-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #222 100%);
+            padding: 40px 35px; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .auth-title { text-align:center; font-size:26px; font-weight:bold; color:#d32f2f; margin-bottom:8px; }
+        .auth-subtitle { text-align:center; color:#bbb; font-size:14px; margin-bottom:30px; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display:block; margin-bottom:8px; font-weight:bold; color:#ccc; font-size:14px; }
+        .form-input {
+            width:100%; padding:14px 16px; border-radius:10px;
+            border:2px solid #3a3a3a; background:#3a3a3a;
+            color:white; font-size:15px; font-family:inherit; transition:0.3s;
+        }
+        .form-input:focus { outline:none; border-color:#d32f2f; background:#2a2a2a; }
+        .form-input.valid   { border-color:#4caf50; }
+        .form-input.invalid { border-color:#f44336; }
+        .form-input::placeholder { color:#777; }
+        .field-error { display:none; color:#f44336; font-size:12px; margin-top:5px; font-weight:bold; }
+        .field-error.visible { display:block; }
+        .auth-btn {
+            width:100%; padding:16px;
+            background:linear-gradient(135deg,#d32f2f 0%,#b71c1c 100%);
+            border:none; border-radius:12px; color:white; font-size:16px;
+            font-weight:bold; cursor:pointer; transition:0.3s;
+            box-shadow:0 5px 20px rgba(211,47,47,0.4);
+            text-transform:uppercase; letter-spacing:1px; margin-top:10px;
+        }
+        .auth-btn:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(211,47,47,0.6); }
+        .auth-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .auth-divider { text-align:center; margin:25px 0; color:#555; font-size:13px; position:relative; }
+        .auth-divider::before,.auth-divider::after {
+            content:''; position:absolute; top:50%; width:40%; height:1px; background:#3a3a3a;
+        }
+        .auth-divider::before { left:0; }
+        .auth-divider::after  { right:0; }
+        .auth-link-text { text-align:center; color:#bbb; font-size:14px; }
+        .auth-link { color:#d32f2f; text-decoration:none; font-weight:bold; }
+        .auth-link:hover { text-decoration:underline; }
+        .spinner-btn {
+            display:inline-block; width:16px; height:16px;
+            border:2px solid rgba(255,255,255,0.4); border-top:2px solid white;
+            border-radius:50%; animation:spin 0.8s linear infinite;
+            vertical-align:middle; margin-right:8px;
+        }
+        .password-strength { margin-top:8px; font-size:12px; }
+        .strength-bar { height:4px; border-radius:2px; background:#3a3a3a; margin-top:5px; overflow:hidden; }
+        .strength-fill { height:100%; width:0%; border-radius:2px; transition:0.3s; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="img/logo.png" alt="Socorro Diesel Pro" class="logo-image">
+        <img src="img/nomelogo.png" alt="Socorro Diesel Pro" class="logo-image">
+    </div>
+    <a href="login.html" class="back-btn">⬅ Já tenho conta</a>
+</header>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">🚛 Criar Conta</h1>
+        <p class="auth-subtitle">Cadastre-se para solicitar socorro 24h</p>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroNome">Nome Completo *</label>
+            <input type="text" id="cadastroNome" class="form-input"
+                   placeholder="Seu nome completo" maxlength="80">
+            <span class="field-error" id="erroNome">Por favor, informe seu nome completo.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroEmail">E-mail *</label>
+            <input type="text" id="cadastroEmail" class="form-input"
+                   placeholder="seu@email.com" maxlength="100">
+            <span class="field-error" id="erroEmail">Informe um e-mail válido.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroUsuario">CPF *</label>
+            <input type="text" id="cadastroUsuario" class="form-input"
+                   placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
+            <span class="field-error" id="erroUsuario">CPF inválido. Digite os 11 números.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroIdade">Idade *</label>
+            <input type="number" id="cadastroIdade" class="form-input"
+                   placeholder="Sua idade" min="18" max="99">
+            <span class="field-error" id="erroIdade">Você precisa ter entre 18 e 99 anos.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroSenha">Senha *</label>
+            <input type="password" id="cadastroSenha" class="form-input"
+                   placeholder="Mínimo 6 caracteres" maxlength="60">
+            <div class="password-strength">
+                <span id="strengthLabel" style="color:#888;"></span>
+                <div class="strength-bar">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+            </div>
+            <span class="field-error" id="erroSenha">A senha deve ter no mínimo 6 caracteres.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="cadastroConfirmarSenha">Confirmar Senha *</label>
+            <input type="password" id="cadastroConfirmarSenha" class="form-input"
+                   placeholder="Repita a senha" maxlength="60">
+            <span class="field-error" id="erroConfirmarSenha">As senhas não coincidem.</span>
+        </div>
+
+        <button class="auth-btn" id="cadastroBtn">Criar Minha Conta</button>
+
+        <div class="auth-divider">ou</div>
+        <p class="auth-link-text">
+            Já tem conta? <a href="login.html" class="auth-link">Fazer login</a>
+        </p>
+    </div>
+</div>
+
+<script src="js/toast.js"></script>
+<script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import {
+        createUserWithEmailAndPassword, updateProfile, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+        doc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const cadastroBtn = document.getElementById('cadastroBtn');
+
+    // Controla se estamos no meio do cadastro para não redirecionar antes de salvar
+    let cadastrandoAgora = false;
+
+    // =============================================
+    // MÁSCARA DE CPF: 000.000.000-00
+    // =============================================
+    document.getElementById('cadastroUsuario').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '').slice(0, 11);
+        if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+        else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,        '$1.$2.$3');
+        else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,               '$1.$2');
+        this.value = v;
+    });
+
+    // =============================================
+    // VALIDAÇÃO DE CPF (algoritmo oficial)
+    // =============================================
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/\D/g, '');
+        if (cpf.length !== 11) return false;
+        if (/^(\d)\1+$/.test(cpf)) return false;
+
+        let soma = 0;
+        for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+        let resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf[9])) return false;
+
+        soma = 0;
+        for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        return resto === parseInt(cpf[10]);
+    }
+
+    // Se já logado (sessão anterior), vai para conta — mas NÃO durante o cadastro
+    onAuthStateChanged(auth, (user) => {
+        if (user && !cadastrandoAgora) {
+            window.location.href = 'conta.html';
+        }
+    });
+
+    // Força da senha
+    document.getElementById('cadastroSenha').addEventListener('input', function () {
+        const pass = this.value;
+        const fill  = document.getElementById('strengthFill');
+        const label = document.getElementById('strengthLabel');
+        let score = 0;
+        if (pass.length >= 6)        score++;
+        if (pass.length >= 10)       score++;
+        if (/[A-Z]/.test(pass))      score++;
+        if (/[0-9]/.test(pass))      score++;
+        if (/[^A-Za-z0-9]/.test(pass)) score++;
+        const levels = [
+            { color:'#f44336', text:'Muito fraca',  pct:'20%' },
+            { color:'#ff7043', text:'Fraca',        pct:'40%' },
+            { color:'#ffa726', text:'Média',        pct:'60%' },
+            { color:'#66bb6a', text:'Boa',          pct:'80%' },
+            { color:'#4caf50', text:'Forte',        pct:'100%'},
+        ];
+        if (!pass) { fill.style.width='0%'; label.textContent=''; return; }
+        const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+        fill.style.width      = lvl.pct;
+        fill.style.background = lvl.color;
+        label.textContent     = lvl.text;
+        label.style.color     = lvl.color;
+    });
+
+    // Validação visual de campo
+    function setFieldState(fieldId, errorId, isInvalid) {
+        const f = document.getElementById(fieldId);
+        const e = document.getElementById(errorId);
+        if (isInvalid) {
+            f.classList.add('invalid'); f.classList.remove('valid');
+            e.classList.add('visible');
+            return false;
+        } else {
+            f.classList.remove('invalid'); f.classList.add('valid');
+            e.classList.remove('visible');
+            return true;
+        }
+    }
+
+    // =============================================
+    // CRIAR CONTA
+    // Salva em Firestore: clientes/{uid} com o iduser do cliente
+    // =============================================
+    cadastroBtn.addEventListener('click', async function () {
+        const nome    = document.getElementById('cadastroNome').value.trim();
+        const email   = document.getElementById('cadastroEmail').value.trim();
+        // CPF: salva só os números (sem pontos e traço) como iduser
+        const iduser  = document.getElementById('cadastroUsuario').value.replace(/\D/g, '').trim();
+        const idade   = parseInt(document.getElementById('cadastroIdade').value.trim(), 10);
+        const senha   = document.getElementById('cadastroSenha').value;
+        const senha2  = document.getElementById('cadastroConfirmarSenha').value;
+
+        let ok = true;
+        ok = setFieldState('cadastroNome',          'erroNome',           nome.length < 3)              && ok;
+        ok = setFieldState('cadastroEmail',         'erroEmail',          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && ok;
+        ok = setFieldState('cadastroUsuario',       'erroUsuario',        !validarCPF(iduser))                         && ok;
+        ok = setFieldState('cadastroIdade',         'erroIdade',          isNaN(idade) || idade < 18 || idade > 99)  && ok;
+        ok = setFieldState('cadastroSenha',         'erroSenha',          senha.length < 6)             && ok;
+        ok = setFieldState('cadastroConfirmarSenha','erroConfirmarSenha', senha !== senha2)             && ok;
+
+        if (!ok) { showWarning('Corrija os campos destacados.'); return; }
+
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-btn"></span>Criando conta...';
+
+        // Bloqueia o redirect automático do onAuthStateChanged enquanto cadastra
+        cadastrandoAgora = true;
+
+        try {
+            // 1. Cria o usuário no Firebase Auth
+            showInfo('Criando sua conta...');
+            const { user } = await createUserWithEmailAndPassword(auth, email, senha);
+            await updateProfile(user, { displayName: nome });
+            console.log('[Cadastro] Auth criado:', user.uid);
+
+            // 2. Salva os dados na coleção 'clientes' com o UID como ID do documento
+            //    O campo iduser vincula esse usuário aos seus veículos e atendimentos
+            showInfo('Salvando seus dados...');
+            await setDoc(doc(db, 'clientes', user.uid), {
+                uid:      user.uid,   // UID do Firebase Auth
+                iduser:   iduser,     // ex: "thairon_master" — chave de busca no banco
+                nome:     nome,
+                email:    email,
+                idade:    idade,
+                criadoEm: serverTimestamp(),
+            });
+            console.log('[Cadastro] Firestore salvo — uid:', user.uid, '| iduser:', iduser);
+
+            // 3. Só agora redireciona (após tudo salvo)
+            showSuccess('Conta criada com sucesso! 🎉');
+            setTimeout(() => {
+                cadastrandoAgora = false;
+                window.location.href = 'conta.html';
+            }, 1500);
+
+        } catch (err) {
+            cadastrandoAgora = false;
+            console.error('[Cadastro] Erro:', err.code, err.message);
+
+            // Erros do Firebase Auth
+            const msgs = {
+                'auth/email-already-in-use':  'Este e-mail já está cadastrado. Faça login.',
+                'auth/invalid-email':          'E-mail inválido.',
+                'auth/weak-password':          'Senha muito fraca. Use pelo menos 6 caracteres.',
+                'auth/network-request-failed': 'Sem internet. Verifique sua conexão.',
+                'auth/operation-not-allowed':  'Login por e-mail desativado. Ative em Authentication → Sign-in method no Firebase Console.',
+                // Erro do Firestore ao salvar
+                'permission-denied':           'Firestore bloqueando. Cole as regras do arquivo REGRAS_FIRESTORE.md no Firebase Console.',
+            };
+            showError(msgs[err.code] || 'Erro: ' + err.message);
+            this.disabled = false;
+            this.textContent = 'Criar Minha Conta';
+        }
+    });
+
+    // Enter dispara o botão
+    ['cadastroNome','cadastroEmail','cadastroUsuario','cadastroIdade','cadastroSenha','cadastroConfirmarSenha']
+        .forEach(id => {
+            document.getElementById(id).addEventListener('keydown', e => {
+                if (e.key === 'Enter') cadastroBtn.click();
+            });
+        });
+</script>
+</body>
+</html>

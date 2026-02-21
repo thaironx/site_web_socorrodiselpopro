@@ -13,7 +13,8 @@
 
     // Toggle ao clicar no hambúrguer
     menuToggle.addEventListener('click', function() {
-        if (mainNav.style.display === 'none' || mainNav.style.display === '') {
+        const isHidden = mainNav.style.display === 'none' || mainNav.style.display === '';
+        if (isHidden) {
             mainNav.style.display = 'flex';
             this.classList.add('active');
         } else {

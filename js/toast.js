@@ -17,7 +17,6 @@ function showToast(message, type = 'info', duration = 4000) {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
-    // Ícones por tipo
     const icons = {
         success: '✓',
         error: '✕',
@@ -25,7 +24,6 @@ function showToast(message, type = 'info', duration = 4000) {
         info: 'ℹ'
     };
     
-    // Títulos por tipo
     const titles = {
         success: 'Sucesso!',
         error: 'Erro!',
@@ -34,27 +32,23 @@ function showToast(message, type = 'info', duration = 4000) {
     };
     
     toast.innerHTML = `
-        <div class="toast-icon">${icons[type]}</div>
+        <div class="toast-icon">${icons[type] || 'ℹ'}</div>
         <div class="toast-content">
-            <div class="toast-title">${titles[type]}</div>
+            <div class="toast-title">${titles[type] || 'Informação'}</div>
             <div class="toast-message">${message}</div>
         </div>
-        <button class="toast-close">×</button>
+        <button class="toast-close" aria-label="Fechar">×</button>
     `;
     
     container.appendChild(toast);
     
     // Botão de fechar
     const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.addEventListener('click', () => {
-        removeToast(toast);
-    });
+    closeBtn.addEventListener('click', () => removeToast(toast));
     
     // Auto-remover após duração
     if (duration > 0) {
-        setTimeout(() => {
-            removeToast(toast);
-        }, duration);
+        setTimeout(() => removeToast(toast), duration);
     }
     
     return toast;
@@ -62,9 +56,10 @@ function showToast(message, type = 'info', duration = 4000) {
 
 // Remove notificação com animação
 function removeToast(toast) {
+    if (!toast || !toast.parentNode) return;
     toast.classList.add('closing');
     setTimeout(() => {
-        toast.remove();
+        if (toast.parentNode) toast.remove();
     }, 400);
 }
 
