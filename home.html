@@ -20,8 +20,8 @@
         <img src="img/nomelogo.png" alt="Socorro Diesel PO Pro" class="logo-image">
     </div>
 
-    <a href="conta.html" class="account-btn">
-        <span>SUA CONTA</span>
+    <a href="conta.html" class="account-btn" id="accountBtn">
+        <span id="accountBtnText">SUA CONTA</span>
         <svg width="25" height="25" viewBox="0 0 25 25" fill="currentColor">
             <circle cx="12.5" cy="8" r="4"/>
             <path d="M6 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/>
@@ -141,6 +141,25 @@
 <script src="js/toast.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/home.js"></script>
+<script type="module">
+    // Atualiza o botão de conta conforme estado de autenticação
+    import { auth } from './js/firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const accountBtn     = document.getElementById('accountBtn');
+    const accountBtnText = document.getElementById('accountBtnText');
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const name = user.displayName ? user.displayName.split(' ')[0] : 'Conta';
+            accountBtnText.textContent = name.toUpperCase();
+            accountBtn.href = 'conta.html';
+        } else {
+            accountBtnText.textContent = 'ENTRAR';
+            accountBtn.href = 'login.html';
+        }
+    });
+</script>
 
 </body>
 </html>
